@@ -13,10 +13,9 @@ namespace ServidorPollitos.Services
 {
     public class TableroPollitoServices
     {
-            TcpListener serverbb;
-            List<TcpClient> clientsPollito = new();
-
-            public TableroPollitoServices()
+        TcpListener serverbb;
+        List<TcpClient> clientsPollito = new();
+        public TableroPollitoServices()
             {
                 serverbb = new TcpListener(IPAddress.Any, 1745);
                 serverbb.Start();
@@ -24,8 +23,7 @@ namespace ServidorPollitos.Services
                 pluma.IsBackground = true;
                 pluma.Start();
             }
-
-            void AceptarPeticionesPollitos()
+        void AceptarPeticionesPollitos()
             {
                 try
                 {
@@ -44,55 +42,30 @@ namespace ServidorPollitos.Services
                     Debug.WriteLine(ex.Message);
                 }
             }
-
-            public event Action<PollitoDTO>? PollitoRecibido;
-            public event Action<string>? PollitoDesconectado;
-
-            void EscucharPollito(object? client)
+        public event Action<PollitoDTO>? PollitoRecibido;
+        public event Action<string>? PollitoDesconectado;
+        void EscucharPollito(object? client)
+        {
+            if (client != null)
             {
-                if (client is TcpClient cliente)
+                TcpClient cliente = (TcpClient)client;
+                while (cliente.Connected)
                 {
-                    StringBuilder acumulador = new();
-                    byte[] buffer = new byte[1024];
-
-                    while (cliente.Connected)
+                    if (cliente.Available > 0)
                     {
-                        try
+                        byte[] buffer = new byte[cliente.Available];
+                        cliente.Client.Receive(buffer);
+                        string json = Encoding.UTF8.GetString(buffer);
+                        PollitoDTO? pollo = JsonSerializer.Deserialize<PollitoDTO>(json);
+                        if (pollo != null)
                         {
-                            int bytesRead = cliente.Client.Receive(buffer);
-                            if (bytesRead > 0)
-                            {
-                                string recibido = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                                acumulador.Append(recibido);
-
-                                string[] mensajes = acumulador.ToString().Split('\n');
-
-                                for (int i = 0; i < mensajes.Length - 1; i++)
-                                {
-                                    try
-                                    {
-                                        var pollo = JsonSerializer.Deserialize<PollitoDTO>(mensajes[i]);
-                                        if (pollo != null)
-                                        {
-                                            PollitoRecibido?.Invoke(pollo);
-                                        }
-                                    }
-                                    catch (JsonException ex)
-                                    {
-                                        Debug.WriteLine($"Error de deserialización: {ex.Message}");
-                                    }
-                                }
-
-                                acumulador.Clear();
-                                acumulador.Append(mensajes.Last());
-                            }
+                            PollitoRecibido?.Invoke(pollo);
                         }
-                        catch (SocketException) { }
                     }
                 }
             }
-
-            public void Retransmitir(PollitoDTO dto)
+        }
+        public void Retransmitir(PollitoDTO dto)
             {
                 string json = JsonSerializer.Serialize(dto) + "\n";
                 byte[] buffer = Encoding.UTF8.GetBytes(json);
@@ -117,8 +90,7 @@ namespace ServidorPollitos.Services
                     }
                 }
             }
-
-            public void Retransmitir(PollitoDTO dto, string clin)
+        public void Retransmitir(PollitoDTO dto, string clin)
             {
                 string json = JsonSerializer.Serialize(dto) + "\n";
                 byte[] buffer = Encoding.UTF8.GetBytes(json);
