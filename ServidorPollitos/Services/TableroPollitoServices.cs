@@ -66,11 +66,10 @@ namespace ServidorPollitos.Services
             }
         }
         public void Retransmitir(PollitoDTO dto)
-            {
-                string json = JsonSerializer.Serialize(dto) + "\n";
-                byte[] buffer = Encoding.UTF8.GetBytes(json);
+        {
+            byte[] buffer = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dto));
 
-                foreach (var b in clientsPollito.ToList())
+            foreach (var b in clientsPollito.ToList())
                 {
                     try
                     {
@@ -90,11 +89,10 @@ namespace ServidorPollitos.Services
                     }
                 }
             }
-        public void Retransmitir(PollitoDTO dto, string clin)
+        public void Retransmitir(PollitoDTO dto, string cliente)
             {
-                string json = JsonSerializer.Serialize(dto) + "\n";
-                byte[] buffer = Encoding.UTF8.GetBytes(json);
-                var tcpPollito = clientsPollito.FirstOrDefault(x => x.Client.RemoteEndPoint?.ToString() == clin);
+                byte[] buffer = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dto)); ;
+                var tcpPollito = clientsPollito.FirstOrDefault(x => x.Client.RemoteEndPoint?.ToString() == cliente);
                 if (tcpPollito != null)
                 {
                     tcpPollito.Client.Send(buffer);
