@@ -68,7 +68,6 @@ namespace ServidorPollitos.ViewModels
                         }
                     }
                     pollitoTablero.Pollito = dTO.Pollito;
-                    pollitoTablero.Posicion = dTO.Posicion;
                     server.Retransmitir(dTO);
                 }
             });
