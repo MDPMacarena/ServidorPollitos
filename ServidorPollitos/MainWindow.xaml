@@ -8,5 +8,40 @@
         xmlns:views="clr-namespace:ServidorPollitos.View"
         mc:Ignorable="d"
         Title="Servidor Pollitos en Fuga" Height="450" Width="800">
-    
+    <Window.DataContext>
+        <vm:TableroPollitoViewModel></vm:TableroPollitoViewModel>
+    </Window.DataContext>
+    <Window.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#A1E3F9" Offset="0"/>
+            <GradientStop Color="#AEEA94" Offset="0.5"/>
+            <GradientStop Color="#A4B465" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Background>
+    <Window.Resources>
+        <Style TargetType="Label">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontFamily" Value="Comic Sans MS"/>
+            <Setter Property="Foreground" Value="#00879E"/>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="pollito" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="30"/>
+        </Style>
+        <Style TargetType="DockPanel">
+            <Setter Property="Margin" Value="10 0 0 0"/>
+        </Style>
+    </Window.Resources>
+    <DockPanel>
+        <WrapPanel DockPanel.Dock="Top" Margin="10">
+            <Label Content="Pollitos en fuga 🐣​" Margin="20 0 330 0"/>
+        </WrapPanel>
+
+        <ContentControl>
+            <views:TableroPollitoView Margin="10"></views:TableroPollitoView>
+        </ContentControl>
+    </DockPanel>
 </Window>
